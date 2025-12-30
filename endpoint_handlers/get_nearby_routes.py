@@ -1,6 +1,8 @@
 from database_connector import  DatabaseConnector
+from pydantic_models import GeoJSONResponse
 
-def get_nearby_routes(db: DatabaseConnector, lat: float, lon: float, radius_miles: float):
+
+def get_nearby_routes(db: DatabaseConnector, lat: float, lon: float, radius_miles: float) -> GeoJSONResponse:
     """Get bus routes within radius of a point"""
 
     # Convert miles to degrees (approximate)
