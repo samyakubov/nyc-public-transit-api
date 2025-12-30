@@ -1,12 +1,6 @@
-from database_connector import get_db, DatabaseConnector
-from fastapi import  Query, Depends
+from database_connector import  DatabaseConnector
 
-async def get_nearby_routes(
-        lat: float = Query(..., description="Latitude"),
-        lon: float = Query(..., description="Longitude"),
-        radius_miles: float = Query(0.5, description="Search radius in miles"),
-        db: DatabaseConnector = Depends(get_db)
-):
+def get_nearby_routes(db: DatabaseConnector, lat: float, lon: float, radius_miles: float):
     """Get bus routes within radius of a point"""
 
     # Convert miles to degrees (approximate)
