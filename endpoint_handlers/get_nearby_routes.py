@@ -3,12 +3,10 @@ from pydantic_models import GeoJSONResponse
 
 
 def get_nearby_routes(db: DatabaseConnector, lat: float, lon: float, radius_miles: float) -> GeoJSONResponse:
-    """Get bus routes within radius of a point"""
+    """Get routes within radius of a point"""
 
-    # Convert miles to degrees (approximate)
     radius_deg = radius_miles / 69.0
 
-    # First, find nearby shapes
     query = """
             WITH nearby_shapes AS (
                 SELECT DISTINCT
@@ -60,16 +58,15 @@ def get_nearby_routes(db: DatabaseConnector, lat: float, lon: float, radius_mile
     features = []
     for _, row in df.iterrows():
         coords = [[c['lon'], c['lat']] for c in row['coordinates']]
-
         feature = {
             "type": "Feature",
             "properties": {
-                "routeId": row['route_id'],
-                "routeName": row['route_short_name'],
-                "routeLongName": row['route_long_name'],
-                "routeColor": f"#{row['route_color']}" if row['route_color'] else "#0039A6",
-                "routeTextColor": f"#{row['route_text_color']}" if row['route_text_color'] else "#FFFFFF",
-                "shapeId": row['shape_id'],
+                "route_id": row['route_id'],
+                "route_name": row['route_short_name'],
+                "route_long_name": row['route_long_name'],
+                "route_color": f"#{row['route_color']}" if row['route_color'] else "#0039A6",
+                "route_text_color": f"#{row['route_text_color']}" if row['route_text_color'] else "#FFFFFF",
+                "shape_id": row['shape_id'],
                 "distance": round(row['min_distance'] * 69, 2)
             },
             "geometry": {
@@ -79,13 +76,4 @@ def get_nearby_routes(db: DatabaseConnector, lat: float, lon: float, radius_mile
         }
         features.append(feature)
 
-    return {
-        "type": "FeatureCollection",
-        "features": features,
-        "query": {
-            "lat": lat,
-            "lon": lon,
-            "radius_miles": radius_miles,
-            "count": len(features)
-        }
-    }
+    return GeoJSONResponse(features=features)
