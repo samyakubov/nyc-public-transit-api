@@ -1,5 +1,5 @@
 from database_connector import  DatabaseConnector
-from pydantic_models import GeoJSONResponse
+from models.pydantic_models import GeoJSONResponse
 from utils.caching import cached
 
 

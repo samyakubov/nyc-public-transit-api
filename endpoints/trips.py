@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query, Depends
 from typing import List, Optional
 from database_connector import get_db, DatabaseConnector
-from pydantic_models import Trip, TripWithStops, TripStop, StopDeparture
+from models.pydantic_models import Trip, TripStop, StopDeparture
 from endpoint_handlers.trip_handlers import (
     get_trip_by_id,
     get_trip_stops,

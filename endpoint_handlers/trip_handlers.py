@@ -6,7 +6,7 @@ and time-based filtering and sorting functionality.
 
 from typing import List, Optional
 from database_connector import DatabaseConnector
-from pydantic_models import Trip, TripStop, StopDeparture
+from models.pydantic_models import Trip, TripStop, StopDeparture
 from datetime import datetime, time, timedelta
 import re
 

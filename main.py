@@ -11,7 +11,6 @@ from utils.cache_management import get_cache_manager
 from utils.cache_middleware import add_cache_middleware
 from utils.error_handling import (
     global_exception_handler,
-    http_exception_handler,
     validation_exception_handler
 )
 from utils.rate_limiting import add_rate_limiting_middleware

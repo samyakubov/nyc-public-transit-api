@@ -7,7 +7,7 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from database_connector import DatabaseConnector, get_db
-from pydantic_models import SystemStatus, ServiceAlert
+from models.pydantic_models import SystemStatus, ServiceAlert
 from endpoint_handlers.system_handlers import (
     get_system_status,
     get_active_alerts,

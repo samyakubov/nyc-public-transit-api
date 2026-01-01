@@ -2,16 +2,15 @@ from fastapi import APIRouter, Query, Depends, HTTPException, Path, Response, Re
 from typing import Optional, List
 from datetime import datetime
 from database_connector import get_db, DatabaseConnector
-from pydantic_models import (
-    Stop, StopWithDistance, StopWithRoutes, StopDeparture, 
-    GeoJSONResponse, PaginatedResponse, RouteBasic
+from models.pydantic_models import (
+    Stop, StopDeparture,
+    GeoJSONResponse, RouteBasic
 )
 from utils.caching import get_cache_headers
 from utils.rate_limiting import check_rate_limits, rate_limiter
 from utils.resource_limits import (
     ResourceLimitValidator,
-    validate_export_request,
-    validate_pagination_params
+    validate_export_request
 )
 
 from endpoint_handlers.stop_handlers import (

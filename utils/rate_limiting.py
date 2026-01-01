@@ -10,7 +10,6 @@ from collections import defaultdict, deque
 import threading
 from dataclasses import dataclass
 from fastapi import Request
-import hashlib
 
 
 @dataclass

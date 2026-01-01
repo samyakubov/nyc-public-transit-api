@@ -6,7 +6,7 @@ Implements business logic for system status, alerts, and statistics operations.
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta
 from database_connector import DatabaseConnector
-from pydantic_models import SystemStatus, ServiceAlert
+from models.pydantic_models import SystemStatus, ServiceAlert
 from utils.caching import cached
 
 

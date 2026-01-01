@@ -1,13 +1,12 @@
-from typing import List, Optional
+from typing import List
 from fastapi import HTTPException
 from database_connector import DatabaseConnector
-from pydantic_models import (
-    Stop, StopWithDistance, StopWithRoutes, StopDeparture, 
+from models.pydantic_models import (
+    Stop, StopDeparture,
     GeoJSONResponse, RouteBasic, RouteFeature
 )
-import math
 from datetime import datetime, timedelta
-from utils.caching import cached, get_global_cache
+from utils.caching import cached
 from utils.error_handling import error_handler
 from utils.validation import validate_latitude, validate_longitude, validate_radius, validate_gtfs_id
 

@@ -3,9 +3,8 @@ Database model definitions for the transit API.
 These models represent the structure of data as stored in the database.
 """
 
-from typing import Optional, List
+from typing import Optional
 from dataclasses import dataclass
-from datetime import datetime, time
 
 
 @dataclass

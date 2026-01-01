@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query, Depends, Response
 from typing import List, Optional
 from database_connector import get_db, DatabaseConnector
-from pydantic_models import RouteBasic, RouteDetail, Stop, Trip, GeoJSONResponse
+from models.pydantic_models import RouteBasic, RouteDetail, Stop, Trip
 from endpoint_handlers.get_nearby_routes import get_nearby_routes
 from endpoint_handlers.route_handlers import (
     get_all_routes,

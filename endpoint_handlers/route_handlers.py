@@ -3,9 +3,9 @@ Route handler functions for the transit API.
 Implements route listing, detail retrieval, route-stop relationships, and route shape geometry.
 """
 
-from typing import List, Optional, Dict, Any
+from typing import List, Optional
 from database_connector import DatabaseConnector
-from pydantic_models import RouteBasic, RouteDetail, Stop, Trip, GeoJSONResponse
+from models.pydantic_models import RouteBasic, RouteDetail, Stop, Trip, GeoJSONResponse
 from utils.caching import cached
 
 
