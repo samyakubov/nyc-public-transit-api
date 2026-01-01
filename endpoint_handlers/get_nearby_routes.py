@@ -1,7 +1,9 @@
 from database_connector import  DatabaseConnector
 from pydantic_models import GeoJSONResponse
+from utils.caching import cached
 
 
+@cached(ttl=300)  # Cache for 5 minutes
 def get_nearby_routes(db: DatabaseConnector, lat: float, lon: float, radius_miles: float) -> GeoJSONResponse:
     """Get routes within radius of a point"""
 

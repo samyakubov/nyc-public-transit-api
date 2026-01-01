@@ -34,10 +34,24 @@ class DatabaseConnector:
         if not self.conn:
             try:
                 self.conn = duckdb.connect(self.db_path)
+                # Install and load spatial extension for geospatial operations
+                self._setup_spatial_extension()
             except Exception as e:
                 print(f"Failed to connect to database at '{self.db_path}': {e}")
                 raise DatabaseError(f"Database connection failed: {e}") from e
         return self.conn
+
+    def _setup_spatial_extension(self) -> None:
+        """Install and load the DuckDB spatial extension for geospatial operations."""
+        try:
+            # Install spatial extension if not already installed
+            self.conn.execute("INSTALL spatial;")
+            # Load spatial extension
+            self.conn.execute("LOAD spatial;")
+        except Exception as e:
+            # Extension might already be installed/loaded, which is fine
+            print(f"Spatial extension setup: {e}")
+            pass
 
     def execute(self, query, params=None) -> list:
         """Executes a SQL query and fetches all results.
