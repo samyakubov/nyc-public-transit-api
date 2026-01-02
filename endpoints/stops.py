@@ -10,7 +10,7 @@ from endpoint_handlers.stop_handlers.fuzzy_search_stops import search_stops_hand
 from endpoint_handlers.stop_handlers.get_stop_routes import get_stop_routes_handler
 
 from endpoint_handlers.stop_handlers.get_stop_departures import get_stop_departures_handler
-from endpoint_handlers.trip_handlers import get_stop_departures_by_time
+from endpoint_handlers.trip_handlers.get_trip_by_time import get_stop_departures_by_time
 
 from models.pydantic_models import (
     Stop, StopDeparture,
