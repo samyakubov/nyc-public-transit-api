@@ -346,7 +346,6 @@ def get_stop_departures_by_time(
             route_long_name=row['route_long_name'] or '',
             headsign=row.get('trip_headsign'),
             departure_time=row['departure_time'],
-            delay_minutes=0  # No real-time data available
         )
         departures.append(departure)
     

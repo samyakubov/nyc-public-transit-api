@@ -45,7 +45,6 @@ class StopDeparture(BaseModel):
     route_long_name: str = Field(..., description="Long name of the route")
     headsign: Optional[str] = Field(None, description="Trip headsign")
     departure_time: str = Field(..., description="Departure time in HH:MM:SS format")
-    delay_minutes: Optional[int] = Field(0, description="Delay in minutes")
 
     @validator('departure_time')
     def validate_departure_time(cls, v):
