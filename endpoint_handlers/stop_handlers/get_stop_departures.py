@@ -1,7 +1,7 @@
 from typing import List
 from fastapi import HTTPException
 from database_connector import DatabaseConnector
-from models.pydantic_models import StopDeparture
+from pydantic_models import StopDeparture
 from datetime import datetime, timedelta
 from utils.caching import cached
 

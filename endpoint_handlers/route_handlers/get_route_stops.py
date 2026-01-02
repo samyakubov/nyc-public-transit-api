@@ -1,7 +1,7 @@
 from typing import List
 
 from database_connector import DatabaseConnector
-from models.pydantic_models import Stop
+from pydantic_models import Stop
 from utils.caching import cached
 
 

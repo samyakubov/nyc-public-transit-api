@@ -1,6 +1,6 @@
 from typing import List, Optional
 from database_connector import DatabaseConnector
-from models.pydantic_models import Trip
+from pydantic_models import Trip
 import re
 
 
