@@ -23,7 +23,7 @@ from utils.resource_limits import ResourceLimitValidator
 
 stop_routes = APIRouter(prefix="/stops")
 
-@stop_routes.get("/nearby", response_model=GeoJSONResponse)
+@stop_routes.get("/nearby", response_model=List[Stop])
 @ResourceLimitValidator.validate_export_limits(max_size=100)
 async def get_nearby_stops(
     request: Request,
