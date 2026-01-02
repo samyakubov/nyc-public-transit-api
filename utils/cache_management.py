@@ -4,11 +4,10 @@ Provides cache invalidation strategies and cache warming functionality.
 """
 
 from typing import List, Optional, Dict, Any
-from datetime import datetime, timedelta
-import asyncio
+from endpoint_handlers.route_handlers.get_all_routes import get_all_routes
 from utils.caching import get_global_cache, invalidate_cache_pattern
 from database_connector import DatabaseConnector
-
+from endpoint_handlers.system_handlers import get_system_status, get_system_stats
 
 class CacheManager:
     """
@@ -236,9 +235,7 @@ class CacheManager:
         }
         
         try:
-            # Import handlers for cache warming
-            from endpoint_handlers.route_handlers import get_all_routes
-            from endpoint_handlers.system_handlers import get_system_status, get_system_stats
+
             
             # Warm route cache with basic route list
             routes = get_all_routes(db, limit=50)  # Cache top 50 routes

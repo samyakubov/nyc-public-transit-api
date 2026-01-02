@@ -72,7 +72,6 @@ class RouteBasic(BaseModel):
 class RouteDetail(RouteBasic):
     """Detailed route information with stops and service days."""
     stops: List[Stop] = Field(default_factory=list, description="List of stops served by this route")
-    service_days: List[str] = Field(default_factory=list, description="Days of the week this route operates")
     route_desc: Optional[str] = Field(None, description="Description of the route")
 
 class StopWithRoutes(Stop):

@@ -1,15 +1,18 @@
 from fastapi import APIRouter, HTTPException, Query, Depends, Response
 from typing import List, Optional
 from database_connector import get_db, DatabaseConnector
+from endpoint_handlers.route_handlers.get_nearby_routes import get_nearby_routes
+
+from endpoint_handlers.route_handlers.get_all_routes import get_all_routes
+
+from endpoint_handlers.route_handlers.get_route_by_id import get_route_by_id
+
+from endpoint_handlers.route_handlers.get_route_stops import get_route_stops
+
+from endpoint_handlers.route_handlers.get_route_trips import get_route_trips
+
+from endpoint_handlers.route_handlers.get_route_shape import get_route_shape
 from models.pydantic_models import RouteBasic, RouteDetail, Stop, Trip
-from endpoint_handlers.get_nearby_routes import get_nearby_routes
-from endpoint_handlers.route_handlers import (
-    get_all_routes,
-    get_route_by_id,
-    get_route_stops,
-    get_route_trips,
-    get_route_shape
-)
 from utils.caching import get_cache_headers
 
 route_routes = APIRouter(prefix="/routes")
