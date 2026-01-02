@@ -3,7 +3,7 @@ from typing import List
 from fastapi import HTTPException
 
 from database_connector import DatabaseConnector
-from models.pydantic_models import RouteBasic
+from pydantic_models import RouteBasic
 from utils.caching import cached
 
 

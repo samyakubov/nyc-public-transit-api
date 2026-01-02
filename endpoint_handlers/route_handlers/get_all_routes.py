@@ -1,7 +1,7 @@
 from typing import List
 
 from database_connector import DatabaseConnector
-from models.pydantic_models import RouteBasic
+from pydantic_models import RouteBasic
 from utils.caching import cached
 
 
@@ -9,7 +9,7 @@ from utils.caching import cached
 def get_all_routes(db: DatabaseConnector, limit: int = 100, offset: int = 0) -> List[RouteBasic]:
     """
     Get a list of all available routes with basic information.
-    
+
     Args:
         db: Database connector instance
         limit: Maximum number of routes to return

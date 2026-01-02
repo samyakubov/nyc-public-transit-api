@@ -2,7 +2,7 @@ from typing import Optional
 
 from database_connector import DatabaseConnector
 from endpoint_handlers.route_handlers.get_route_stops import get_route_stops
-from models.pydantic_models import RouteDetail
+from pydantic_models import RouteDetail
 from utils.caching import cached
 
 

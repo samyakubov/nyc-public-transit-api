@@ -1,7 +1,7 @@
 from typing import Optional, List
 
 from database_connector import DatabaseConnector
-from models.pydantic_models import Trip
+from pydantic_models import Trip
 from utils.caching import cached
 
 

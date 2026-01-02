@@ -1,6 +1,6 @@
 from typing import List, Optional
 from database_connector import DatabaseConnector
-from models.pydantic_models import Trip
+from pydantic_models import Trip
 from datetime import datetime, time
 
 def get_active_trips(db: DatabaseConnector, route_id: Optional[str] = None, limit: int = 100) -> List[Trip]:

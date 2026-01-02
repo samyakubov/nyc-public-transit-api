@@ -1,6 +1,6 @@
 from typing import Optional
 from database_connector import DatabaseConnector
-from models.pydantic_models import Trip
+from pydantic_models import Trip
 
 
 def get_trip_by_id(db: DatabaseConnector, trip_id: str) -> Optional[Trip]:

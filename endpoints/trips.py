@@ -10,7 +10,7 @@ from endpoint_handlers.trip_handlers.get_active_trips import get_active_trips
 from endpoint_handlers.trip_handlers.get_trips_by_time_range import get_trips_by_time_range
 
 from endpoint_handlers.trip_handlers.get_trip_by_time import get_stop_departures_by_time
-from models.pydantic_models import Trip, TripStop, StopDeparture
+from pydantic_models import Trip, TripStop, StopDeparture
 
 trip_routes = APIRouter(prefix="/trips")
 

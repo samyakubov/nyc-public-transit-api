@@ -1,7 +1,7 @@
 
 from typing import List
 from database_connector import DatabaseConnector
-from models.pydantic_models import TripStop
+from pydantic_models import TripStop
 
 def get_trip_stops(db: DatabaseConnector, trip_id: str) -> List[TripStop]:
     """

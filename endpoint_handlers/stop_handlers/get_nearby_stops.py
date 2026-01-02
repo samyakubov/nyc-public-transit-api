@@ -1,6 +1,6 @@
 
 from database_connector import DatabaseConnector
-from models.pydantic_models import (
+from pydantic_models import (
     GeoJSONResponse, RouteFeature
 )
 from utils.caching import cached

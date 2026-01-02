@@ -12,7 +12,7 @@ from endpoint_handlers.stop_handlers.get_stop_routes import get_stop_routes_hand
 from endpoint_handlers.stop_handlers.get_stop_departures import get_stop_departures_handler
 from endpoint_handlers.trip_handlers.get_trip_by_time import get_stop_departures_by_time
 
-from models.pydantic_models import (
+from pydantic_models import (
     Stop, StopDeparture,
     GeoJSONResponse, RouteBasic
 )

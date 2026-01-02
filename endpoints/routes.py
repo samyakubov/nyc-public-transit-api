@@ -12,7 +12,7 @@ from endpoint_handlers.route_handlers.get_route_stops import get_route_stops
 from endpoint_handlers.route_handlers.get_route_trips import get_route_trips
 
 from endpoint_handlers.route_handlers.get_route_shape import get_route_shape
-from models.pydantic_models import RouteBasic, RouteDetail, Stop, Trip
+from pydantic_models import RouteBasic, RouteDetail, Stop, Trip
 from utils.caching import get_cache_headers
 
 route_routes = APIRouter(prefix="/routes")

@@ -1,6 +1,6 @@
 from typing import Optional
 from database_connector import DatabaseConnector
-from models.pydantic_models import GeoJSONResponse
+from pydantic_models import GeoJSONResponse
 from utils.caching import cached
 
 @cached(ttl=1800)  # Cache for 30 minutes - route shapes rarely change

@@ -1,5 +1,5 @@
 from database_connector import DatabaseConnector
-from models.pydantic_models import Stop
+from pydantic_models import Stop
 from utils.caching import cached
 from utils.error_handling import error_handler
 from utils.validation import validate_gtfs_id
