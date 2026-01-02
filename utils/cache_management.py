@@ -4,11 +4,9 @@ Provides cache invalidation strategies and cache warming functionality.
 """
 
 from typing import List, Optional, Dict, Any
-from datetime import datetime, timedelta
-import asyncio
+from endpoint_handlers.route_handlers.get_all_routes import get_all_routes
 from utils.caching import get_global_cache, invalidate_cache_pattern
 from database_connector import DatabaseConnector
-
 
 class CacheManager:
     """
@@ -38,7 +36,7 @@ class CacheManager:
         invalidated_count = 0
         
         if stop_id:
-            # Invalidate specific stop-related cache entries
+            
             patterns = [
                 f"get_stop_by_id_handler:{stop_id}",
                 f"get_stop_routes_handler:{stop_id}",
@@ -47,11 +45,11 @@ class CacheManager:
             for pattern in patterns:
                 invalidated_count += invalidate_cache_pattern(pattern)
         else:
-            # Invalidate all stop-related cache entries
+            
             for pattern in self._invalidation_patterns['stops']:
                 invalidated_count += invalidate_cache_pattern(pattern)
             
-            # Also invalidate geospatial queries that might include stops
+            
             for pattern in self._invalidation_patterns['geospatial']:
                 invalidated_count += invalidate_cache_pattern(pattern)
         
@@ -70,7 +68,7 @@ class CacheManager:
         invalidated_count = 0
         
         if route_id:
-            # Invalidate specific route-related cache entries
+            
             patterns = [
                 f"get_route_by_id:{route_id}",
                 f"get_route_stops:{route_id}",
@@ -80,11 +78,11 @@ class CacheManager:
             for pattern in patterns:
                 invalidated_count += invalidate_cache_pattern(pattern)
         else:
-            # Invalidate all route-related cache entries
+            
             for pattern in self._invalidation_patterns['routes']:
                 invalidated_count += invalidate_cache_pattern(pattern)
             
-            # Also invalidate geospatial queries that might include routes
+            
             for pattern in self._invalidation_patterns['geospatial']:
                 invalidated_count += invalidate_cache_pattern(pattern)
         
@@ -103,15 +101,15 @@ class CacheManager:
         invalidated_count = 0
         
         if route_id:
-            # Invalidate trip-related cache entries for specific route
+            
             patterns = [
                 f"get_route_trips:{route_id}",
-                f"get_stop_departures_handler"  # Departures might be affected
+                f"get_stop_departures_handler"  
             ]
             for pattern in patterns:
                 invalidated_count += invalidate_cache_pattern(pattern)
         else:
-            # Invalidate all trip-related cache entries
+            
             for pattern in self._invalidation_patterns['trips']:
                 invalidated_count += invalidate_cache_pattern(pattern)
         
@@ -147,20 +145,18 @@ class CacheManager:
         stats = self.cache.get_stats()
         cache_info = self.cache.get_cache_info()
         
-        # Calculate cache health score based on hit rate and size
+        
         hit_rate = stats.get('hit_rate', 0)
         cache_size = stats.get('cache_size', 0)
         
-        # Health score: 100% for hit rate > 0.8, scaled down for lower rates
-        health_score = min(100, hit_rate * 125)  # 0.8 hit rate = 100 score
         
-        # Adjust for cache size (too small might indicate issues)
+        health_score = min(100, hit_rate * 125)  
+        
+        
         if cache_size < 10:
-            health_score *= 0.8  # Reduce score if cache is too small
+            health_score *= 0.8  
         
-        health_status = "excellent" if health_score >= 80 else \
-                       "good" if health_score >= 60 else \
-                       "fair" if health_score >= 40 else "poor"
+        health_status = "excellent" if health_score >= 80 else                       "good" if health_score >= 60 else                       "fair" if health_score >= 40 else "poor"
         
         return {
             "health_score": round(health_score, 2),
@@ -195,12 +191,12 @@ class CacheManager:
         if cache_size > 1000:
             recommendations.append("Large cache size detected. Consider implementing cache size limits.")
         
-        # Check for expired entries
+        
         expired_count = sum(1 for entry in cache_info.get('entries', []) if entry.get('is_expired', False))
         if expired_count > cache_size * 0.2:
             recommendations.append("High number of expired entries. Consider running cache cleanup.")
         
-        # Check for low-access entries
+        
         low_access_count = sum(1 for entry in cache_info.get('entries', []) if entry.get('access_count', 0) <= 1)
         if low_access_count > cache_size * 0.3:
             recommendations.append("Many cache entries have low access counts. Consider adjusting caching strategy.")
@@ -236,30 +232,17 @@ class CacheManager:
         }
         
         try:
-            # Import handlers for cache warming
-            from endpoint_handlers.route_handlers import get_all_routes
-            from endpoint_handlers.system_handlers import get_system_status, get_system_stats
-            
-            # Warm route cache with basic route list
-            routes = get_all_routes(db, limit=50)  # Cache top 50 routes
+
+            routes = get_all_routes(db, limit=50)
             warmed_counts['routes'] = len(routes)
-            
-            # Warm system cache
-            get_system_status(db)
-            get_system_stats(db)
             warmed_counts['system'] = 2
-            
-            # Note: We don't warm stop cache as it's location-dependent
-            # and would require specific coordinates
-            
+
         except Exception as e:
-            # Cache warming is optional, don't fail if it doesn't work
             pass
         
         return warmed_counts
 
 
-# Global cache manager instance
 _cache_manager = CacheManager()
 
 

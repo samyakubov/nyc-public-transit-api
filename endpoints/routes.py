@@ -1,15 +1,18 @@
 from fastapi import APIRouter, HTTPException, Query, Depends, Response
 from typing import List, Optional
 from database_connector import get_db, DatabaseConnector
-from models.pydantic_models import RouteBasic, RouteDetail, Stop, Trip
-from endpoint_handlers.get_nearby_routes import get_nearby_routes
-from endpoint_handlers.route_handlers import (
-    get_all_routes,
-    get_route_by_id,
-    get_route_stops,
-    get_route_trips,
-    get_route_shape
-)
+from endpoint_handlers.route_handlers.get_nearby_routes import get_nearby_routes
+
+from endpoint_handlers.route_handlers.get_all_routes import get_all_routes
+
+from endpoint_handlers.route_handlers.get_route_by_id import get_route_by_id
+
+from endpoint_handlers.route_handlers.get_route_stops import get_route_stops
+
+from endpoint_handlers.route_handlers.get_route_trips import get_route_trips
+
+from endpoint_handlers.route_handlers.get_route_shape import get_route_shape
+from pydantic_models import RouteBasic, RouteDetail, Stop, Trip
 from utils.caching import get_cache_headers
 
 route_routes = APIRouter(prefix="/routes")
@@ -22,8 +25,8 @@ def get_nearby(
     radius_miles: float = Query(0.5, description="Search radius in miles"),
     db: DatabaseConnector = Depends(get_db)
 ):
-    # Add cache headers for client-side caching
-    cache_headers = get_cache_headers(300)  # 5 minutes
+    
+    cache_headers = get_cache_headers(300)  
     for key, value in cache_headers.items():
         response.headers[key] = value
     
@@ -37,8 +40,8 @@ def list_routes(
     offset: int = Query(0, ge=0, description="Number of routes to skip")
 ):
     """Get a list of all available routes."""
-    # Add cache headers for client-side caching
-    cache_headers = get_cache_headers(600)  # 10 minutes
+    
+    cache_headers = get_cache_headers(600)  
     for key, value in cache_headers.items():
         response.headers[key] = value
     
@@ -51,8 +54,8 @@ def get_route(
     db: DatabaseConnector = Depends(get_db)
 ):
     """Get detailed information about a specific route."""
-    # Add cache headers for client-side caching
-    cache_headers = get_cache_headers(600)  # 10 minutes
+    
+    cache_headers = get_cache_headers(600)  
     for key, value in cache_headers.items():
         response.headers[key] = value
     
@@ -68,14 +71,14 @@ def get_route_stops_endpoint(
     db: DatabaseConnector = Depends(get_db)
 ):
     """Get all stops served by a specific route."""
-    # Add cache headers for client-side caching
-    cache_headers = get_cache_headers(600)  # 10 minutes
+    
+    cache_headers = get_cache_headers(600)  
     for key, value in cache_headers.items():
         response.headers[key] = value
     
     stops = get_route_stops(db, route_id)
     if not stops:
-        # Check if route exists
+        
         route = get_route_by_id(db, route_id)
         if not route:
             raise HTTPException(status_code=404, detail=f"Route {route_id} not found")
@@ -90,14 +93,14 @@ def get_route_trips_endpoint(
     limit: int = Query(100, ge=1, le=1000, description="Maximum number of trips to return")
 ):
     """Get all trips for a specific route."""
-    # Add cache headers for client-side caching
-    cache_headers = get_cache_headers(300)  # 5 minutes
+    
+    cache_headers = get_cache_headers(300)  
     for key, value in cache_headers.items():
         response.headers[key] = value
     
     trips = get_route_trips(db, route_id, service_date, limit)
     if not trips:
-        # Check if route exists
+        
         route = get_route_by_id(db, route_id)
         if not route:
             raise HTTPException(status_code=404, detail=f"Route {route_id} not found")
@@ -110,14 +113,14 @@ def get_route_shape_endpoint(
     db: DatabaseConnector = Depends(get_db)
 ):
     """Get the geometric shape/path for a specific route."""
-    # Add cache headers for client-side caching - longer cache for shapes
-    cache_headers = get_cache_headers(1800)  # 30 minutes
+    
+    cache_headers = get_cache_headers(1800)  
     for key, value in cache_headers.items():
         response.headers[key] = value
     
     shape = get_route_shape(db, route_id)
     if not shape:
-        # Check if route exists
+        
         route = get_route_by_id(db, route_id)
         if not route:
             raise HTTPException(status_code=404, detail=f"Route {route_id} not found")

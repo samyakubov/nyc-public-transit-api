@@ -1,14 +1,16 @@
 from fastapi import APIRouter, HTTPException, Query, Depends
 from typing import List, Optional
 from database_connector import get_db, DatabaseConnector
-from models.pydantic_models import Trip, TripStop, StopDeparture
-from endpoint_handlers.trip_handlers import (
-    get_trip_by_id,
-    get_trip_stops,
-    get_active_trips,
-    get_trips_by_time_range,
-    get_stop_departures_by_time
-)
+from endpoint_handlers.trip_handlers.get_trip_by_id import get_trip_by_id
+
+from endpoint_handlers.trip_handlers.get_trip_stops import get_trip_stops
+
+from endpoint_handlers.trip_handlers.get_active_trips import get_active_trips
+
+from endpoint_handlers.trip_handlers.get_trips_by_time_range import get_trips_by_time_range
+
+from endpoint_handlers.trip_handlers.get_trip_by_time import get_stop_departures_by_time
+from pydantic_models import Trip, TripStop, StopDeparture
 
 trip_routes = APIRouter(prefix="/trips")
 
@@ -31,7 +33,7 @@ def get_trip_stops_endpoint(
     """Get the complete stop sequence for a specific trip."""
     stops = get_trip_stops(db, trip_id)
     if not stops:
-        # Check if trip exists
+        
         trip = get_trip_by_id(db, trip_id)
         if not trip:
             raise HTTPException(status_code=404, detail=f"Trip {trip_id} not found")
@@ -75,9 +77,6 @@ def get_stop_departures_by_time_endpoint(
     try:
         departures = get_stop_departures_by_time(db, stop_id, start_time, end_time, limit)
         if not departures:
-            # Check if stop exists
-            from endpoint_handlers.trip_handlers import get_trip_by_id
-            # We'll do a simple check by trying to find any trips for this stop
             check_query = "SELECT COUNT(*) as count FROM stop_times WHERE stop_id = ?"
             df = db.execute_df(check_query, [stop_id])
             if df.iloc[0]['count'] == 0:

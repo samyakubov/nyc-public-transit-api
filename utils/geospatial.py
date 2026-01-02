@@ -19,16 +19,16 @@ def haversine_distance(lat1: float, lon1: float, lat2: float, lon2: float, unit:
     Returns:
         Distance between the two points in the specified unit
     """
-    # Convert decimal degrees to radians
+    
     lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
     
-    # Haversine formula
+    
     dlat = lat2 - lat1
     dlon = lon2 - lon1
     a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
     c = 2 * math.asin(math.sqrt(a))
     
-    # Earth's radius in different units
+    
     earth_radius = {
         "miles": 3959,
         "kilometers": 6371,
@@ -67,7 +67,7 @@ def calculate_bounding_box(lat: float, lon: float, radius_miles: float) -> Tuple
     Returns:
         Tuple of (min_lat, min_lon, max_lat, max_lon)
     """
-    # Approximate degrees per mile (varies by latitude)
+    
     lat_degrees_per_mile = 1 / 69.0
     lon_degrees_per_mile = 1 / (69.0 * math.cos(math.radians(lat)))
     
@@ -75,10 +75,10 @@ def calculate_bounding_box(lat: float, lon: float, radius_miles: float) -> Tuple
     lon_offset = radius_miles * lon_degrees_per_mile
     
     return (
-        lat - lat_offset,  # min_lat
-        lon - lon_offset,  # min_lon
-        lat + lat_offset,  # max_lat
-        lon + lon_offset   # max_lon
+        lat - lat_offset,  
+        lon - lon_offset,  
+        lat + lat_offset,  
+        lon + lon_offset   
     )
 
 

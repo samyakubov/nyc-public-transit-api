@@ -14,7 +14,7 @@ from utils.error_handling import error_handler, ErrorCode, create_rate_limit_err
 class ResourceLimits:
     """Resource limit configuration and validation."""
     
-    # Export size limits by endpoint category
+    
     EXPORT_LIMITS = {
         "stops": {
             "default": 1000,
@@ -38,25 +38,25 @@ class ResourceLimits:
         }
     }
     
-    # Request size limits (in bytes)
+    
     REQUEST_SIZE_LIMITS = {
-        "default": 1024 * 1024,      # 1MB
-        "export": 5 * 1024 * 1024,   # 5MB
-        "search": 512 * 1024,        # 512KB
-        "bulk": 10 * 1024 * 1024     # 10MB
+        "default": 1024 * 1024,      
+        "export": 5 * 1024 * 1024,   
+        "search": 512 * 1024,        
+        "bulk": 10 * 1024 * 1024     
     }
     
-    # Pagination limits
+    
     PAGINATION_LIMITS = {
         "max_per_page": 1000,
         "default_per_page": 20,
         "max_offset": 100000
     }
     
-    # Time window limits for queries
+    
     TIME_WINDOW_LIMITS = {
-        "max_hours": 168,  # 1 week
-        "max_days": 30,    # 1 month
+        "max_hours": 168,  
+        "max_days": 30,    
         "default_hours": 24
     }
 
@@ -105,7 +105,7 @@ def get_export_limit(endpoint_category: str) -> int:
             limits = ResourceLimits.EXPORT_LIMITS[resource_type]
             return limits.get(sub_category, limits.get("default", 1000))
     
-    return 1000  # Default limit
+    return 1000  
 
 
 def get_request_size_limit(endpoint_category: str) -> int:
@@ -168,7 +168,7 @@ def validate_pagination_params(
     Raises:
         HTTPException: If parameters are invalid
     """
-    # Normalize parameters
+    
     if limit is not None and per_page is None:
         per_page = limit
     
@@ -176,7 +176,7 @@ def validate_pagination_params(
     validated_per_page = ResourceLimits.PAGINATION_LIMITS["default_per_page"] if per_page is None else per_page
     validated_offset = 0 if offset is None else offset
     
-    # Validate page
+    
     if validated_page < 1:
         error_handler.handle_validation_error(
             field="page",
@@ -185,7 +185,7 @@ def validate_pagination_params(
             request_id=request_id
         )
     
-    # Validate per_page/limit
+    
     if validated_per_page < 1:
         error_handler.handle_validation_error(
             field="per_page" if per_page is not None else "limit",
@@ -202,7 +202,7 @@ def validate_pagination_params(
             request_id=request_id
         )
     
-    # Validate offset
+    
     if validated_offset < 0:
         error_handler.handle_validation_error(
             field="offset",
@@ -223,7 +223,7 @@ def validate_pagination_params(
         "page": validated_page,
         "per_page": validated_per_page,
         "offset": validated_offset,
-        "limit": validated_per_page  # For backward compatibility
+        "limit": validated_per_page  
     }
 
 
@@ -278,7 +278,7 @@ def validate_time_window(
                     request_id=request_id
                 )
             
-            # Check if time range is too large
+            
             time_diff = end_dt - start_dt
             if time_diff.total_seconds() > ResourceLimits.TIME_WINDOW_LIMITS["max_hours"] * 3600:
                 error_handler.handle_validation_error(
@@ -337,7 +337,7 @@ def validate_search_parameters(
             )
     
     if filters is not None:
-        # Validate filter complexity
+        
         if len(filters) > 10:
             error_handler.handle_validation_error(
                 field="filters",
@@ -346,7 +346,7 @@ def validate_search_parameters(
                 request_id=request_id
             )
         
-        # Validate individual filter values
+        
         for key, value in filters.items():
             if isinstance(value, str) and len(value) > 100:
                 error_handler.handle_validation_error(
@@ -370,7 +370,7 @@ class ResourceLimitValidator:
         def decorator(func):
             @wraps(func)
             async def wrapper(*args, **kwargs):
-                # Extract request from args/kwargs
+                
                 request = None
                 for arg in args:
                     if isinstance(arg, Request):
@@ -384,7 +384,7 @@ class ResourceLimitValidator:
                     endpoint_category = get_endpoint_category(request.url.path)
                     limit = max_size or get_export_limit(endpoint_category)
                     
-                    # Check various size parameters
+                    
                     size_params = ['limit', 'per_page', 'count', 'size']
                     for param in size_params:
                         if param in kwargs and kwargs[param]:
@@ -404,7 +404,7 @@ class ResourceLimitValidator:
         def decorator(func):
             @wraps(func)
             async def wrapper(*args, **kwargs):
-                # Extract request from args/kwargs
+                
                 request = None
                 for arg in args:
                     if isinstance(arg, Request):
@@ -416,7 +416,7 @@ class ResourceLimitValidator:
                 
                 request_id = request.headers.get("X-Request-ID") if request else None
                 
-                # Validate pagination parameters
+                
                 pagination_params = validate_pagination_params(
                     page=kwargs.get('page'),
                     per_page=kwargs.get('per_page'),
@@ -425,7 +425,7 @@ class ResourceLimitValidator:
                     request_id=request_id
                 )
                 
-                # Update kwargs with validated parameters
+                
                 kwargs.update(pagination_params)
                 
                 return await func(*args, **kwargs)
@@ -438,7 +438,7 @@ class ResourceLimitValidator:
         def decorator(func):
             @wraps(func)
             async def wrapper(*args, **kwargs):
-                # Extract request from args/kwargs
+                
                 request = None
                 for arg in args:
                     if isinstance(arg, Request):
@@ -450,7 +450,7 @@ class ResourceLimitValidator:
                 
                 request_id = request.headers.get("X-Request-ID") if request else None
                 
-                # Validate time window parameters
+                
                 time_params = validate_time_window(
                     time_window_hours=kwargs.get('time_window_hours'),
                     start_time=kwargs.get('start_time'),
@@ -458,7 +458,7 @@ class ResourceLimitValidator:
                     request_id=request_id
                 )
                 
-                # Update kwargs with validated parameters
+                
                 kwargs.update(time_params)
                 
                 return await func(*args, **kwargs)
@@ -502,7 +502,6 @@ def create_resource_limit_guidance(
         f"Reduce the requested value from {current_value} to {limit_value} or less.")
 
 
-# Convenience functions for common validations
 async def validate_export_request(
     request: Request,
     limit: Optional[int] = None,
@@ -513,13 +512,13 @@ async def validate_export_request(
     endpoint_category = get_endpoint_category(request.url.path)
     request_id = request.headers.get("X-Request-ID")
     
-    # Determine export size
+    
     export_size = limit or per_page or 100
     
-    # Validate export size
+    
     validate_export_size(export_size, endpoint_category, request_id)
     
-    # Validate format if provided
+    
     if format_type and format_type not in ['json', 'csv', 'geojson']:
         error_handler.handle_validation_error(
             field="format",
@@ -544,7 +543,7 @@ async def validate_bulk_request(
     endpoint_category = get_endpoint_category(request.url.path)
     request_id = request.headers.get("X-Request-ID")
     
-    # Get appropriate limit for bulk operations
+    
     if operation_type == "export":
         limit = get_export_limit(f"{endpoint_category}.bulk_export")
     else:

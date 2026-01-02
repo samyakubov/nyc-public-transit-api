@@ -16,7 +16,7 @@ class CacheMiddleware(BaseHTTPMiddleware):
     Middleware for automatic cache management and performance monitoring.
     """
     
-    def __init__(self, app, cleanup_interval: int = 300):  # 5 minutes default
+    def __init__(self, app, cleanup_interval: int = 300):  
         super().__init__(app)
         self.cleanup_interval = cleanup_interval
         self.last_cleanup = time.time()
@@ -26,19 +26,19 @@ class CacheMiddleware(BaseHTTPMiddleware):
         """
         Process request and perform periodic cache maintenance.
         """
-        # Check if it's time for cache cleanup
+        
         current_time = time.time()
         if current_time - self.last_cleanup > self.cleanup_interval:
-            # Run cleanup in background to avoid blocking requests
+            
             asyncio.create_task(self._background_cleanup())
             self.last_cleanup = current_time
         
-        # Add cache performance headers to response
+        
         start_time = time.time()
         response = await call_next(request)
         process_time = time.time() - start_time
         
-        # Add cache statistics to response headers for monitoring
+        
         cache_stats = self.cache_manager.cache.get_stats()
         response.headers["X-Cache-Hit-Rate"] = str(round(cache_stats.get('hit_rate', 0), 3))
         response.headers["X-Cache-Size"] = str(cache_stats.get('cache_size', 0))
