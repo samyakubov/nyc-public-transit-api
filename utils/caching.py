@@ -37,7 +37,7 @@ class CacheEntry:
 class InMemoryCache:
     """Simple in-memory cache with TTL support."""
     
-    def __init__(self, default_ttl: Optional[int] = 300):  # 5 minutes default
+    def __init__(self, default_ttl: Optional[int] = 300):  
         self._cache: Dict[str, CacheEntry] = {}
         self.default_ttl = default_ttl
         self._stats = {
@@ -156,7 +156,6 @@ class InMemoryCache:
         }
 
 
-# Global cache instance
 _global_cache = InMemoryCache()
 
 
@@ -174,24 +173,24 @@ def cached(ttl: Optional[int] = None, key_func: Optional[Callable] = None):
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args, **kwargs):
-            # Generate cache key
+            
             if key_func:
                 cache_key = key_func(*args, **kwargs)
             else:
                 cache_key = f"{func.__name__}:{hash((args, tuple(sorted(kwargs.items()))))}"
             
-            # Try to get from cache
+            
             cached_result = _global_cache.get(cache_key)
             if cached_result is not None:
                 return cached_result
             
-            # Execute function and cache result
+            
             result = func(*args, **kwargs)
             _global_cache.set(cache_key, result, ttl)
             
             return result
         
-        # Add cache management methods to the decorated function
+        
         wrapper.cache_clear = lambda: _global_cache.clear()
         wrapper.cache_info = lambda: _global_cache.get_stats()
         
@@ -246,7 +245,6 @@ def invalidate_cache_pattern(pattern: str) -> int:
     return len(keys_to_delete)
 
 
-# Cache management functions
 def get_global_cache() -> InMemoryCache:
     """Get the global cache instance."""
     return _global_cache

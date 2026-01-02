@@ -16,14 +16,14 @@ def get_active_trips(db: DatabaseConnector, route_id: Optional[str] = None, limi
     Returns:
         List of Trip objects
     """
-    # Get current time to simulate "active" trips
+    
     current_time = datetime.now().time()
 
-    # Define typical service hours (6 AM to 11 PM)
+    
     service_start = time(6, 0)
     service_end = time(23, 0)
 
-    # Base query for trips
+    
     base_query = """
                  SELECT DISTINCT
                      t.trip_id,
@@ -39,15 +39,15 @@ def get_active_trips(db: DatabaseConnector, route_id: Optional[str] = None, limi
 
     params = []
 
-    # Add route filter if specified
+    
     if route_id:
         base_query += " AND t.route_id = ?"
         params.append(route_id)
 
-    # Simulate active trips by filtering based on departure times
-    # This is a simplified approach without real-time data
+    
+    
     if service_start <= current_time <= service_end:
-        # During service hours, show trips with departures around current time
+        
         current_time_str = current_time.strftime("%H:%M:%S")
         base_query += """
         AND EXISTS (
@@ -56,14 +56,14 @@ def get_active_trips(db: DatabaseConnector, route_id: Optional[str] = None, limi
             AND st2.departure_time BETWEEN ? AND ?
         )
         """
-        # Show trips departing within the next 2 hours
+        
         end_time = datetime.combine(datetime.today(), current_time)
         end_time = end_time.replace(hour=min(23, end_time.hour + 2))
         params.extend([current_time_str, end_time.strftime("%H:%M:%S")])
     else:
-        # Outside service hours, return empty list or early morning trips
+        
         if current_time < service_start:
-            # Early morning - show first trips of the day
+            
             base_query += """
             AND EXISTS (
                 SELECT 1 FROM stop_times st2 
@@ -72,7 +72,7 @@ def get_active_trips(db: DatabaseConnector, route_id: Optional[str] = None, limi
             )
             """
         else:
-            # Late night - return empty list
+            
             return []
 
     base_query += " ORDER BY t.trip_headsign LIMIT ?"
@@ -82,7 +82,7 @@ def get_active_trips(db: DatabaseConnector, route_id: Optional[str] = None, limi
 
     trips = []
     for _, row in df.iterrows():
-        # Convert direction_id to int if present
+        
         direction_id = None
         if row.get('direction_id') and str(row['direction_id']).strip():
             try:

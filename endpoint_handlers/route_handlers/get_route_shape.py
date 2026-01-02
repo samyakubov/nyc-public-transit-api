@@ -3,7 +3,7 @@ from database_connector import DatabaseConnector
 from pydantic_models import GeoJSONResponse
 from utils.caching import cached
 
-@cached(ttl=1800)  # Cache for 30 minutes - route shapes rarely change
+@cached(ttl=1800)  
 def get_route_shape(db: DatabaseConnector, route_id: str) -> Optional[GeoJSONResponse]:
     """
     Get the geometric shape/path for a specific route.
@@ -34,7 +34,7 @@ def get_route_shape(db: DatabaseConnector, route_id: str) -> Optional[GeoJSONRes
     if df.empty:
         return None
 
-    # Get route information for properties
+    
     route_info_query = """
                        SELECT
                            route_id,

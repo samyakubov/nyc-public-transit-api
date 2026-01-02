@@ -160,7 +160,7 @@ def generate_pagination_metadata(
     has_next = page < total_pages
     has_prev = page > 1
     
-    # Build query string
+    
     params = query_params.copy() if query_params else {}
     params['per_page'] = per_page
     

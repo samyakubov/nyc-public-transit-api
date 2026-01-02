@@ -33,7 +33,7 @@ def get_trip_stops_endpoint(
     """Get the complete stop sequence for a specific trip."""
     stops = get_trip_stops(db, trip_id)
     if not stops:
-        # Check if trip exists
+        
         trip = get_trip_by_id(db, trip_id)
         if not trip:
             raise HTTPException(status_code=404, detail=f"Trip {trip_id} not found")

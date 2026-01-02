@@ -38,7 +38,7 @@ def get_route_trips(db: DatabaseConnector, route_id: str, service_date: Optional
 
     trips = []
     for _, row in df.iterrows():
-        # Convert direction_id to int if present
+        
         direction_id = None
         if row.get('direction_id') and str(row['direction_id']).strip():
             try:

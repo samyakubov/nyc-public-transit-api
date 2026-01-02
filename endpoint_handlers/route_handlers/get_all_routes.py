@@ -35,7 +35,6 @@ def get_all_routes(db: DatabaseConnector, limit: int = 100, offset: int = 0) -> 
 
     routes = []
     for _, row in df.iterrows():
-        # Convert route_type to int, defaulting to 3 (bus) if empty or invalid
         route_type = 3
         if row.get('route_type') and str(row['route_type']).strip():
             try:

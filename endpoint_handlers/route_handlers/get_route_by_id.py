@@ -18,7 +18,7 @@ def get_route_by_id(db: DatabaseConnector, route_id: str) -> Optional[RouteDetai
     Returns:
         RouteDetail object or None if not found
     """
-    # Get basic route information
+    
     route_query = """
                   SELECT
                       route_id,
@@ -46,10 +46,8 @@ def get_route_by_id(db: DatabaseConnector, route_id: str) -> Optional[RouteDetai
         except (ValueError, TypeError):
             route_type = 3
 
-    # Get stops served by this route
+    
     stops = get_route_stops(db, route_id)
-
-
 
     route_detail = RouteDetail(
         route_id=route_row['route_id'],

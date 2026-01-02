@@ -115,7 +115,7 @@ def validate_gtfs_id(gtfs_id: str, id_type: str = "ID") -> str:
     if not gtfs_id.strip():
         raise IDValidationError(f"{id_type} cannot be empty")
     
-    # GTFS IDs can contain letters, numbers, underscores, hyphens, and periods
+    
     if not re.match(r'^[a-zA-Z0-9._-]+$', gtfs_id):
         raise IDValidationError(f"{id_type} contains invalid characters: {gtfs_id}")
     
@@ -141,7 +141,7 @@ def validate_time_format(time_str: str) -> str:
     if not isinstance(time_str, str):
         raise TimeValidationError(f"Time must be a string, got {type(time_str)}")
     
-    # GTFS allows times > 24:00:00 for next-day service
+    
     time_pattern = r'^([0-9]{1,2}):([0-5][0-9]):([0-5][0-9])$'
     match = re.match(time_pattern, time_str)
     
@@ -205,7 +205,7 @@ def validate_search_query(query: str, min_length: int = 1, max_length: int = 100
     if len(query) > max_length:
         raise ValueError(f"Search query too long (maximum {max_length} characters)")
     
-    # Remove potentially dangerous characters but keep spaces and common punctuation
+    
     sanitized = re.sub(r'[<>"\';\\]', '', query)
     
     return sanitized
@@ -225,15 +225,15 @@ def validate_pagination_params(page: Optional[int] = None, per_page: Optional[in
     Raises:
         ValueError: If parameters are invalid
     """
-    # Set defaults
+    
     validated_page = 1 if page is None else page
     validated_per_page = 20 if per_page is None else per_page
     
-    # Validate page
+    
     if not isinstance(validated_page, int) or validated_page < 1:
         raise ValueError(f"Page must be a positive integer, got {validated_page}")
     
-    # Validate per_page
+    
     if not isinstance(validated_per_page, int) or validated_per_page < 1:
         raise ValueError(f"Per page must be a positive integer, got {validated_per_page}")
     
@@ -260,7 +260,7 @@ def sanitize_sql_input(input_str: str) -> str:
     if not isinstance(input_str, str):
         return str(input_str)
     
-    # Remove common SQL injection patterns
+    
     dangerous_patterns = [';', '--', '/*', '*/', 'xp_', 'sp_', 'DROP', 'DELETE', 'INSERT', 'UPDATE']
     
     sanitized = input_str

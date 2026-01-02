@@ -7,7 +7,7 @@ from pydantic_models import RouteBasic
 from utils.caching import cached
 
 
-@cached(ttl=600)  # Cache for 10 minutes - route-stop relationships are stable
+@cached(ttl=600)  
 def get_stop_routes_handler(db: DatabaseConnector, stop_id: str) -> List[RouteBasic]:
     """
     Get all routes that serve a specific stop.
@@ -15,7 +15,6 @@ def get_stop_routes_handler(db: DatabaseConnector, stop_id: str) -> List[RouteBa
     Returns basic route information for all routes stopping at this location.
     """
     try:
-        # First verify the stop exists
         stop_check_query = "SELECT COUNT(*) as count FROM stops WHERE stop_id = ?"
         stop_count = db.execute_df(stop_check_query, [stop_id])
 
@@ -60,7 +59,7 @@ def get_stop_routes_handler(db: DatabaseConnector, stop_id: str) -> List[RouteBa
                 route_long_name=row['route_long_name'] or '',
                 route_color=row['route_color'] or 'FFFFFF',
                 route_text_color=row['route_text_color'] or '000000',
-                route_type=row['route_type']  # Now handled by COALESCE
+                route_type=row['route_type']
             )
             routes.append(route)
 

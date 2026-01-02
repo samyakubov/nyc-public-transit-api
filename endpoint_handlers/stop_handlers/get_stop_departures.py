@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from utils.caching import cached
 
 
-@cached(ttl=60)  # Cache for 1 minute - departure times change frequently
+@cached(ttl=60)
 def get_stop_departures_handler(
         db: DatabaseConnector,
         stop_id: str,
@@ -20,7 +20,6 @@ def get_stop_departures_handler(
     Uses actual departure times from the stop_times table.
     """
     try:
-        # First verify the stop exists
         stop_check_query = "SELECT COUNT(*) as count FROM stops WHERE stop_id = ?"
         stop_count = db.execute_df(stop_check_query, [stop_id])
 
@@ -40,12 +39,10 @@ def get_stop_departures_handler(
                 }
             )
 
-        # Calculate time range
         current_time = datetime.now()
         start_time = current_time.strftime("%H:%M:%S")
         end_time = (current_time + timedelta(hours=time_window_hours)).strftime("%H:%M:%S")
 
-        # Handle day overflow - if end time is past midnight, limit to end of day
         if time_window_hours > 24 - current_time.hour:
             end_time = "23:59:59"
 

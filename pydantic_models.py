@@ -4,7 +4,6 @@ import re
 
 T = TypeVar('T')
 
-# Base Models
 class RouteFeature(BaseModel):
     type: str = "Feature"
     properties: dict
@@ -14,7 +13,6 @@ class GeoJSONResponse(BaseModel):
     type: str = "FeatureCollection"
     features: List[RouteFeature]
 
-# Stop Models
 class Stop(BaseModel):
     """Basic stop information model."""
     stop_id: str = Field(..., description="Unique identifier for the stop")
@@ -52,7 +50,6 @@ class StopDeparture(BaseModel):
             raise ValueError('departure_time must be in HH:MM:SS format')
         return v
 
-# Route Models
 class RouteBasic(BaseModel):
     """Basic route information model."""
     route_id: str = Field(..., description="Unique identifier for the route")
@@ -77,7 +74,6 @@ class StopWithRoutes(Stop):
     """Stop model with associated routes."""
     routes: List[RouteBasic] = Field(default_factory=list, description="Routes serving this stop")
 
-# Trip Models
 class Trip(BaseModel):
     """Trip information model."""
     trip_id: str = Field(..., description="Unique identifier for the trip")
@@ -112,7 +108,6 @@ class TripWithStops(Trip):
     stops: List[TripStop] = Field(default_factory=list, description="Ordered list of stops for this trip")
 
 
-# Pagination Models
 class PaginatedResponse(BaseModel, Generic[T]):
     """Generic paginated response model."""
     items: List[T] = Field(..., description="List of items for this page")
@@ -122,7 +117,6 @@ class PaginatedResponse(BaseModel, Generic[T]):
     has_next: bool = Field(..., description="Whether there is a next page")
     has_prev: bool = Field(..., description="Whether there is a previous page")
 
-# Export Models
 class ExportRequest(BaseModel):
     """Request model for data exports."""
     format: str = Field(..., description="Export format (json, csv, geojson)")
@@ -134,7 +128,6 @@ class ExportRequest(BaseModel):
             raise ValueError('format must be one of: json, csv, geojson')
         return v
 
-# Error Models
 class ErrorDetail(BaseModel):
     """Detailed error information."""
     field: Optional[str] = Field(None, description="Field that caused the error")

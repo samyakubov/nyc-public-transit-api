@@ -37,7 +37,7 @@ def get_route_stops(db: DatabaseConnector, route_id: str) -> List[Stop]:
 
     stops = []
     for _, row in df.iterrows():
-        # Convert location_type to int, defaulting to 0 if empty or null
+        
         location_type = 0
         if row.get('location_type') and str(row['location_type']).strip():
             try:
@@ -51,10 +51,10 @@ def get_route_stops(db: DatabaseConnector, route_id: str) -> List[Stop]:
             stop_lat=float(row['stop_lat']),
             stop_lon=float(row['stop_lon']),
             location_type=location_type,
-            wheelchair_boarding=0,  # Default since not in schema
-            platform_code=None,    # Default since not in schema
-            stop_desc=None,        # Default since not in schema
-            zone_id=None          # Default since not in schema
+            wheelchair_boarding=0,  
+            platform_code=None,    
+            stop_desc=None,        
+            zone_id=None          
         )
         stops.append(stop)
 

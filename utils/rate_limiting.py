@@ -18,8 +18,8 @@ class RateLimit:
     requests_per_minute: int
     requests_per_hour: int
     requests_per_day: int
-    export_size_limit: int = 10000  # Maximum items per export
-    request_size_limit: int = 1024 * 1024  # 1MB request size limit
+    export_size_limit: int = 10000  
+    request_size_limit: int = 1024 * 1024  
 
 
 @dataclass
@@ -37,49 +37,49 @@ class RateLimiter:
         self._usage: Dict[str, deque] = defaultdict(deque)
         self._lock = threading.Lock()
         
-        # Default rate limits by endpoint category
+        
         self._limits = {
             "default": RateLimit(
                 requests_per_minute=60,
                 requests_per_hour=1000,
                 requests_per_day=10000,
                 export_size_limit=1000,
-                request_size_limit=1024 * 1024  # 1MB
+                request_size_limit=1024 * 1024  
             ),
             "search": RateLimit(
                 requests_per_minute=30,
                 requests_per_hour=500,
                 requests_per_day=5000,
                 export_size_limit=500,
-                request_size_limit=512 * 1024  # 512KB
+                request_size_limit=512 * 1024  
             ),
             "export": RateLimit(
                 requests_per_minute=5,
                 requests_per_hour=50,
                 requests_per_day=200,
                 export_size_limit=10000,
-                request_size_limit=5 * 1024 * 1024  # 5MB
+                request_size_limit=5 * 1024 * 1024  
             ),
             "system": RateLimit(
                 requests_per_minute=120,
                 requests_per_hour=2000,
                 requests_per_day=20000,
                 export_size_limit=100,
-                request_size_limit=256 * 1024  # 256KB
+                request_size_limit=256 * 1024  
             )
         }
     
     def _get_client_id(self, request: Request) -> str:
         """Generate client identifier from request."""
-        # Try to get API key first
+        
         api_key = request.headers.get("X-API-Key")
         if api_key:
             return f"api_key:{api_key}"
         
-        # Fall back to IP address
+        
         client_ip = request.client.host if request.client else "unknown"
         
-        # Consider X-Forwarded-For for proxy setups
+        
         forwarded_for = request.headers.get("X-Forwarded-For")
         if forwarded_for:
             client_ip = forwarded_for.split(",")[0].strip()
@@ -146,13 +146,13 @@ class RateLimiter:
         with self._lock:
             records = self._usage[client_id]
             
-            # Clean up old records (keep 25 hours of data)
+            
             self._cleanup_old_records(records, 25 * 3600)
             
-            # Get current usage stats
+            
             usage = self._get_usage_stats(records)
             
-            # Check rate limits
+            
             rate_limit_info = {
                 "category": category,
                 "limits": {
@@ -175,7 +175,7 @@ class RateLimiter:
                 }
             }
             
-            # Check request rate limits
+            
             if usage["minute"] >= limits.requests_per_minute:
                 rate_limit_info["exceeded"] = "requests_per_minute"
                 rate_limit_info["retry_after"] = 60
@@ -191,19 +191,19 @@ class RateLimiter:
                 rate_limit_info["retry_after"] = 86400
                 return False, rate_limit_info
             
-            # Check export size limit
+            
             if export_size and export_size > limits.export_size_limit:
                 rate_limit_info["exceeded"] = "export_size_limit"
                 rate_limit_info["export_size"] = export_size
                 return False, rate_limit_info
             
-            # Check request size limit
+            
             if request_size and request_size > limits.request_size_limit:
                 rate_limit_info["exceeded"] = "request_size_limit"
                 rate_limit_info["request_size"] = request_size
                 return False, rate_limit_info
             
-            # Record this request
+            
             records.append(UsageRecord(
                 timestamp=time.time(),
                 request_size=request_size or 0,
@@ -221,7 +221,7 @@ class RateLimiter:
             remaining = rate_limit_info["remaining"]
             reset_times = rate_limit_info.get("reset_times", {})
             
-            # Standard rate limit headers
+            
             headers["X-RateLimit-Limit-Minute"] = str(limits["requests_per_minute"])
             headers["X-RateLimit-Limit-Hour"] = str(limits["requests_per_hour"])
             headers["X-RateLimit-Limit-Day"] = str(limits["requests_per_day"])
@@ -237,11 +237,11 @@ class RateLimiter:
             if "day" in reset_times:
                 headers["X-RateLimit-Reset-Day"] = reset_times["day"]
             
-            # Export and request size limits
+            
             headers["X-Export-Size-Limit"] = str(limits["export_size_limit"])
             headers["X-Request-Size-Limit"] = str(limits["request_size_limit"])
             
-            # Category information
+            
             headers["X-RateLimit-Category"] = rate_limit_info.get("category", "default")
         
         if "retry_after" in rate_limit_info:
@@ -266,7 +266,7 @@ class RateLimiter:
             
             current_time = time.time()
             for client_id, records in self._usage.items():
-                # Count requests in last hour
+                
                 hour_requests = self._count_requests_in_window(records, 3600)
                 if hour_requests > 0:
                     summary["active_clients"] += 1
@@ -298,7 +298,6 @@ class RateLimiter:
             }
 
 
-# Global rate limiter instance
 rate_limiter = RateLimiter()
 
 
@@ -306,17 +305,17 @@ def get_request_size(request: Request) -> int:
     """Estimate request size in bytes."""
     size = 0
     
-    # Headers size
-    for name, value in request.headers.items():
-        size += len(name.encode()) + len(value.encode()) + 4  # ": " and "\r\n"
     
-    # URL size
+    for name, value in request.headers.items():
+        size += len(name.encode()) + len(value.encode()) + 4  
+    
+    
     size += len(str(request.url).encode())
     
-    # Method size
+    
     size += len(request.method.encode())
     
-    # Body size (if available)
+    
     content_length = request.headers.get("content-length")
     if content_length:
         try:
@@ -372,7 +371,7 @@ async def check_rate_limits(
                 request_id=request.headers.get("X-Request-ID")
             )
         else:
-            # Request rate limit exceeded
+            
             current_usage = rate_limit_info["current_usage"]
             limits = rate_limit_info["limits"]
             
@@ -382,7 +381,7 @@ async def check_rate_limits(
             elif exceeded_limit == "requests_per_hour":
                 limit_value = limits["requests_per_hour"]
                 usage_value = current_usage["hour"]
-            else:  # requests_per_day
+            else:  
                 limit_value = limits["requests_per_day"]
                 usage_value = current_usage["day"]
             
@@ -411,16 +410,16 @@ class RateLimitMiddleware:
         
         request = Request(scope, receive)
         
-        # Skip rate limiting for excluded paths
+        
         if any(request.url.path.startswith(path) for path in self.exclude_paths):
             await self.app(scope, receive, send)
             return
         
-        # Check rate limits
+        
         try:
             rate_limit_info = await check_rate_limits(request)
             
-            # Add rate limit headers to response
+            
             async def send_with_headers(message):
                 if message["type"] == "http.response.start":
                     headers = rate_limiter.get_rate_limit_headers(rate_limit_info)
@@ -431,7 +430,7 @@ class RateLimitMiddleware:
             await self.app(scope, receive, send_with_headers)
             
         except Exception as e:
-            # Rate limit exceeded - error already raised by check_rate_limits
+            
             await self.app(scope, receive, send)
 
 
@@ -440,12 +439,11 @@ def add_rate_limiting_middleware(app, exclude_paths: Optional[list] = None):
     app.add_middleware(RateLimitMiddleware, exclude_paths=exclude_paths)
 
 
-# Export size validation decorator
 def validate_export_size(max_size: Optional[int] = None):
     """Decorator to validate export size limits."""
     def decorator(func):
         async def wrapper(*args, **kwargs):
-            # Extract request from args/kwargs
+            
             request = None
             for arg in args:
                 if isinstance(arg, Request):
@@ -453,11 +451,11 @@ def validate_export_size(max_size: Optional[int] = None):
                     break
             
             if not request:
-                # Look in kwargs
+                
                 request = kwargs.get('request')
             
             if request:
-                # Check if this is an export request
+                
                 export_size = kwargs.get('limit', kwargs.get('per_page', 0))
                 if export_size and max_size and export_size > max_size:
                     from utils.error_handling import error_handler

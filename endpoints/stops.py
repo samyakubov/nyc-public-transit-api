@@ -40,14 +40,14 @@ async def get_nearby_stops(
     Returns stops as GeoJSON features with distance information.
     Resource limits: Maximum 100 stops per request.
     """
-    # Rate limiting is handled by middleware, but we can add custom headers
+    
     rate_limit_info = await check_rate_limits(request)
     rate_limit_headers = rate_limiter.get_rate_limit_headers(rate_limit_info)
     
-    # Add cache headers for client-side caching
-    cache_headers = get_cache_headers(300)  # 5 minutes
     
-    # Combine all headers
+    cache_headers = get_cache_headers(300)  
+    
+    
     all_headers = {**cache_headers, **rate_limit_headers}
     for key, value in all_headers.items():
         response.headers[key] = value
@@ -65,8 +65,8 @@ def get_stop_by_id(
     
     Returns complete stop information including location and accessibility features.
     """
-    # Add cache headers for client-side caching
-    cache_headers = get_cache_headers(600)  # 10 minutes
+    
+    cache_headers = get_cache_headers(600)  
     for key, value in cache_headers.items():
         response.headers[key] = value
     
@@ -87,14 +87,14 @@ async def search_stops(
     Returns stops that match the search query, ordered by relevance.
     Resource limits: Maximum 500 stops per search request.
     """
-    # Check rate limits and get headers
+    
     rate_limit_info = await check_rate_limits(request)
     rate_limit_headers = rate_limiter.get_rate_limit_headers(rate_limit_info)
     
-    # Add cache headers for client-side caching
-    cache_headers = get_cache_headers(300)  # 5 minutes
     
-    # Combine all headers
+    cache_headers = get_cache_headers(300)  
+    
+    
     all_headers = {**cache_headers, **rate_limit_headers}
     for key, value in all_headers.items():
         response.headers[key] = value
@@ -112,8 +112,8 @@ def get_stop_routes(
     
     Returns basic route information for all routes stopping at this location.
     """
-    # Add cache headers for client-side caching
-    cache_headers = get_cache_headers(600)  # 10 minutes
+    
+    cache_headers = get_cache_headers(600)  
     for key, value in cache_headers.items():
         response.headers[key] = value
     
@@ -138,8 +138,8 @@ async def get_stop_departures(
     Can use either time_window_hours from current time or explicit start/end times.
     Resource limits: Maximum 50 departures, 24-hour time window.
     """
-    # Add cache headers for client-side caching - shorter cache for departure times
-    cache_headers = get_cache_headers(60)  # 1 minute
+    
+    cache_headers = get_cache_headers(60)  
     for key, value in cache_headers.items():
         response.headers[key] = value
     
@@ -149,5 +149,5 @@ async def get_stop_departures(
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
     else:
-        # Use time window from current time
+        
         return get_stop_departures_handler(db, stop_id, limit, time_window_hours)

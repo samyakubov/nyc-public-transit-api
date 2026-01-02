@@ -33,7 +33,7 @@ def get_trip_by_id(db: DatabaseConnector, trip_id: str) -> Optional[Trip]:
 
     row = df.iloc[0]
 
-    # Convert direction_id to int if present
+    
     direction_id = None
     if row.get('direction_id') and str(row['direction_id']).strip():
         try:

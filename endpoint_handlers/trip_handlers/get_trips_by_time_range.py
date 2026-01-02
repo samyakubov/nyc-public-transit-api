@@ -24,7 +24,7 @@ def get_trips_by_time_range(
     Returns:
         List of Trip objects that have departures within the time range
     """
-    # Validate time format
+    
     time_pattern = r'^\d{1,2}:\d{2}:\d{2}$'
     if not re.match(time_pattern, start_time) or not re.match(time_pattern, end_time):
         raise ValueError("Time must be in HH:MM:SS format")
@@ -60,7 +60,7 @@ def get_trips_by_time_range(
 
     trips = []
     for _, row in df.iterrows():
-        # Convert direction_id to int if present
+        
         direction_id = None
         if row.get('direction_id') and str(row['direction_id']).strip():
             try:

@@ -36,8 +36,8 @@ def get_stop_by_id_handler(db: DatabaseConnector, stop_id: str) -> Stop:
             stop_name=row['stop_name'],
             stop_lat=row['stop_lat'],
             stop_lon=row['stop_lon'],
-            location_type=row['location_type'],  # Now handled by COALESCE
-            wheelchair_boarding=0,  # Default value since not in current schema
+            location_type=row['location_type'],  
+            wheelchair_boarding=0,  
             platform_code=None,
             stop_desc=None,
             zone_id=None

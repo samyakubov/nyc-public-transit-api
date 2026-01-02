@@ -11,14 +11,13 @@ from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 import logging
 
-# Configure logging
 logger = logging.getLogger(__name__)
 
 
 class ErrorCode:
     """Standard error codes for the transit API."""
     
-    # Validation Errors (400)
+    
     VALIDATION_ERROR = "VALIDATION_ERROR"
     INVALID_COORDINATES = "INVALID_COORDINATES"
     INVALID_TIME_FORMAT = "INVALID_TIME_FORMAT"
@@ -29,25 +28,25 @@ class ErrorCode:
     INVALID_SEARCH_QUERY = "INVALID_SEARCH_QUERY"
     INVALID_EXPORT_FORMAT = "INVALID_EXPORT_FORMAT"
     
-    # Resource Not Found Errors (404)
+    
     STOP_NOT_FOUND = "STOP_NOT_FOUND"
     ROUTE_NOT_FOUND = "ROUTE_NOT_FOUND"
     TRIP_NOT_FOUND = "TRIP_NOT_FOUND"
     SHAPE_NOT_FOUND = "SHAPE_NOT_FOUND"
     NO_RESULTS_FOUND = "NO_RESULTS_FOUND"
     
-    # Rate Limiting Errors (429)
+    
     RATE_LIMIT_EXCEEDED = "RATE_LIMIT_EXCEEDED"
     EXPORT_LIMIT_EXCEEDED = "EXPORT_LIMIT_EXCEEDED"
     REQUEST_SIZE_LIMIT_EXCEEDED = "REQUEST_SIZE_LIMIT_EXCEEDED"
     
-    # Server Errors (500)
+    
     DATABASE_ERROR = "DATABASE_ERROR"
     SYSTEM_ERROR = "SYSTEM_ERROR"
     CACHE_ERROR = "CACHE_ERROR"
     EXTERNAL_SERVICE_ERROR = "EXTERNAL_SERVICE_ERROR"
     
-    # Service Unavailable (503)
+    
     SERVICE_UNAVAILABLE = "SERVICE_UNAVAILABLE"
     MAINTENANCE_MODE = "MAINTENANCE_MODE"
 
@@ -232,7 +231,7 @@ def create_database_error(
         }
     )
     
-    # Only include debug info in development/testing environments
+    
     if include_debug_info and debug_info:
         details.additional_info["debug_info"] = debug_info
     
@@ -261,7 +260,7 @@ def create_system_error(
         }
     )
     
-    # Only include debug info in development/testing environments
+    
     if include_debug_info and debug_info:
         details.additional_info["debug_info"] = debug_info
     
@@ -282,7 +281,7 @@ def handle_pydantic_validation_error(
     errors = validation_error.errors()
     
     if len(errors) == 1:
-        # Single validation error
+        
         error = errors[0]
         field = ".".join(str(loc) for loc in error["loc"])
         
@@ -294,7 +293,7 @@ def handle_pydantic_validation_error(
             request_id=request_id
         )
     else:
-        # Multiple validation errors
+        
         error_details = []
         for error in errors:
             field = ".".join(str(loc) for loc in error["loc"])
@@ -329,7 +328,7 @@ def create_http_exception(
 def get_status_code_for_error_code(error_code: str) -> int:
     """Get appropriate HTTP status code for error code."""
     status_code_map = {
-        # 400 Bad Request
+        
         ErrorCode.VALIDATION_ERROR: 400,
         ErrorCode.INVALID_COORDINATES: 400,
         ErrorCode.INVALID_TIME_FORMAT: 400,
@@ -340,25 +339,25 @@ def get_status_code_for_error_code(error_code: str) -> int:
         ErrorCode.INVALID_SEARCH_QUERY: 400,
         ErrorCode.INVALID_EXPORT_FORMAT: 400,
         
-        # 404 Not Found
+        
         ErrorCode.STOP_NOT_FOUND: 404,
         ErrorCode.ROUTE_NOT_FOUND: 404,
         ErrorCode.TRIP_NOT_FOUND: 404,
         ErrorCode.SHAPE_NOT_FOUND: 404,
         ErrorCode.NO_RESULTS_FOUND: 404,
         
-        # 429 Too Many Requests
+        
         ErrorCode.RATE_LIMIT_EXCEEDED: 429,
         ErrorCode.EXPORT_LIMIT_EXCEEDED: 429,
         ErrorCode.REQUEST_SIZE_LIMIT_EXCEEDED: 429,
         
-        # 500 Internal Server Error
+        
         ErrorCode.DATABASE_ERROR: 500,
         ErrorCode.SYSTEM_ERROR: 500,
         ErrorCode.CACHE_ERROR: 500,
         ErrorCode.EXTERNAL_SERVICE_ERROR: 500,
         
-        # 503 Service Unavailable
+        
         ErrorCode.SERVICE_UNAVAILABLE: 503,
         ErrorCode.MAINTENANCE_MODE: 503,
     }
@@ -412,7 +411,7 @@ class ErrorHandler:
         request_id: Optional[str] = None
     ):
         """Handle database errors with standardized response."""
-        # Log the original error for debugging
+        
         logger.error(f"Database error in {operation}: {str(original_error)}", exc_info=True)
         
         error = create_database_error(
@@ -430,7 +429,7 @@ class ErrorHandler:
         request_id: Optional[str] = None
     ):
         """Handle system errors with standardized response."""
-        # Log the original error for debugging
+        
         logger.error(f"System error in {component}: {str(original_error)}", exc_info=True)
         
         error = create_system_error(
@@ -458,7 +457,7 @@ class ErrorHandler:
             request_id=request_id
         )
         
-        # Add rate limit headers
+        
         headers = {
             "X-RateLimit-Limit": str(limit),
             "X-RateLimit-Remaining": str(max(0, limit - current_usage)),
@@ -469,16 +468,15 @@ class ErrorHandler:
         raise_standardized_error(error, headers)
 
 
-# Global error handler instance
 error_handler = ErrorHandler()
 
 
 def get_request_id(request: Request) -> str:
     """Extract or generate request ID for error tracking."""
-    # Try to get request ID from headers first
+    
     request_id = request.headers.get("X-Request-ID")
     if not request_id:
-        # Generate a new request ID
+        
         request_id = str(uuid.uuid4())
     return request_id
 
@@ -487,14 +485,14 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
     """Global exception handler for unhandled exceptions."""
     request_id = get_request_id(request)
     
-    # Log the unhandled exception
+    
     logger.error(f"Unhandled exception for request {request_id}: {str(exc)}", exc_info=True)
     
-    # Create standardized error response
+    
     error = create_system_error(
         component="global_handler",
         request_id=request_id,
-        include_debug_info=False  # Never expose debug info in production
+        include_debug_info=False  
     )
     
     return JSONResponse(
@@ -508,16 +506,16 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> JSONRe
     """Handler for HTTPExceptions to ensure consistent error format."""
     request_id = get_request_id(request)
     
-    # Check if the exception already has standardized error format
+    
     if isinstance(exc.detail, dict) and "error" in exc.detail:
-        # Already standardized, just add request ID header
+        
         return JSONResponse(
             status_code=exc.status_code,
             content=exc.detail,
             headers={**exc.headers, "X-Request-ID": request_id} if exc.headers else {"X-Request-ID": request_id}
         )
     
-    # Convert non-standardized HTTPException to standardized format
+    
     error = StandardizedError(
         code=ErrorCode.SYSTEM_ERROR,
         message=str(exc.detail),

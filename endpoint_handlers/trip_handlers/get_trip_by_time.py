@@ -31,21 +31,21 @@ def get_stop_departures_by_time(
     Returns:
         List of StopDeparture objects sorted by departure time
     """
-    # Set default time range if not provided
+    
     if not start_time:
         start_time = datetime.now().strftime("%H:%M:%S")
 
     if not end_time:
-        # Default to 2 hours from start time
+        
         start_dt = datetime.strptime(start_time, "%H:%M:%S")
         end_dt = start_dt + timedelta(hours=2)
-        # Handle day overflow
+        
         if end_dt.day > start_dt.day:
             end_time = "23:59:59"
         else:
             end_time = end_dt.strftime("%H:%M:%S")
 
-    # Validate time format
+    
     time_pattern = r'^\d{1,2}:\d{2}:\d{2}$'
     if not re.match(time_pattern, start_time) or not re.match(time_pattern, end_time):
         raise ValueError("Time must be in HH:MM:SS format")

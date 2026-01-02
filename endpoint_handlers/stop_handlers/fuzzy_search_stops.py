@@ -6,7 +6,7 @@ from utils.caching import cached
 from utils.error_handling import error_handler
 
 
-@cached(ttl=300)  # Cache for 5 minutes
+@cached(ttl=300)  
 def search_stops_handler(db: DatabaseConnector, query_text: str, limit: int) -> List[Stop]:
     """
     Search stops by name using fuzzy search capabilities.
@@ -14,7 +14,7 @@ def search_stops_handler(db: DatabaseConnector, query_text: str, limit: int) -> 
     Uses LIKE pattern matching and similarity scoring to find relevant stops.
     """
     try:
-        # Validate search parameters
+        
         from utils.validation import validate_search_query
         query_text = validate_search_query(query_text, min_length=1, max_length=100)
 
@@ -25,7 +25,7 @@ def search_stops_handler(db: DatabaseConnector, query_text: str, limit: int) -> 
                 constraint="must be between 1 and 1000"
             )
 
-        # Implement fuzzy search using LIKE patterns and similarity scoring
+        
         search_pattern = f"%{query_text.lower()}%"
 
         query = """
@@ -53,10 +53,10 @@ def search_stops_handler(db: DatabaseConnector, query_text: str, limit: int) -> 
                 """
 
         params = [
-            query_text,  # Exact match
-            f"{query_text.lower()}%",  # Starts with
-            search_pattern,  # Contains
-            search_pattern,  # WHERE clause
+            query_text,  
+            f"{query_text.lower()}%",  
+            search_pattern,  
+            search_pattern,  
             limit
         ]
 
@@ -69,7 +69,7 @@ def search_stops_handler(db: DatabaseConnector, query_text: str, limit: int) -> 
                 stop_name=row['stop_name'],
                 stop_lat=row['stop_lat'],
                 stop_lon=row['stop_lon'],
-                location_type=row['location_type'],  # Now handled by COALESCE in query
+                location_type=row['location_type'],  
                 wheelchair_boarding=0,
                 platform_code=None,
                 stop_desc=None,
