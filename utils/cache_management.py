@@ -156,7 +156,7 @@ class CacheManager:
         if cache_size < 10:
             health_score *= 0.8  
         
-        health_status = "excellent" if health_score >= 80 else                       "good" if health_score >= 60 else                       "fair" if health_score >= 40 else "poor"
+        health_status = "excellent" if health_score >= 80 else "good" if health_score >= 60 else "fair" if health_score >= 40 else "poor"
         
         return {
             "health_score": round(health_score, 2),
